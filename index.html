@@ -107,6 +107,15 @@ def calculate_grades(event):
         requirements = float(Element("requirements").element.value)
         prelim_exam = float(Element("prelim_exam").element.value)
 
+         # Validate inputs
+        if (recitation < 0 or recitation > 100 or
+            quiz < 0 or quiz > 100 or
+            requirements < 0 or requirements > 100 or
+            prelim_exam < 0 or prelim_exam > 100):
+            Element("resultText").element.innerHTML = "Invalid input. Please enter numbers not greater than 100."
+            Element("result").element.style.display = "block"
+            return
+       
         # Check for absences
         if absences >= 4:
             Element("resultText").element.innerHTML = "FAILED due to excessive absences."
