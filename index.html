@@ -135,6 +135,8 @@ def calculate_grades(event):
         if prelim_grade < 75:
             result_element_class = "failed"
             result_text += "You need to improve to pass."
+            if prelim_grade < 74.99:
+                result_text += " Sorry, you don't have a chance to become Dean's Lister."
         else:
             result_element_class = "passed"
             result_text += "Congratulations! You have a chance to pass this semester. KEEP IT UP!"
