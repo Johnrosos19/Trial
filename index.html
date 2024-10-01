@@ -1,0 +1,176 @@
+<!DOCTYPE html> 
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Calculator</title>
+    <!-- Include PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, hsl(187, 85%, 68%), #f1f8e9);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: rgba(254d31);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #00695c;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #004d40;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus {
+            border-color: #00695c;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #004d40;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(220, 220, 220, 0.8);
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+   
+        nav { 
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Grade Computation Tool</h1>
+        <input type="number" id="attendance" placeholder="Absences" min="0" required />
+        <input type="number" id="recitation" placeholder="Recitation" min="0" max="100" required />
+        <input type="number" id="quiz" placeholder="Quizzes" min="0" max="100" required />
+        <input type="number" id="requirements" placeholder="Requirements" min="0" max="100" required />
+        <input type="number" id="prelim_exam" placeholder="Prelim Exam" min="0" max="100" required />
+        <button id="calculateButton">Calculate Grades</button>
+
+        <div id="result" class="result">
+            <p id="resultText"></p>
+            <p id="requiredGrades"></p>
+        </div>
+    </div>
+   <nav> <a href="https://johnrosos19.github.io/Lab2-Final/" target="_blank" >Grade Calculator</a> <nav>
+
+    <!-- PyScript code -->
+    <py-script>
+from pyscript import Element
+
+def calculate_grades(event):
+    try:
+        # Get values from inputs
+        absences = int(Element("attendance").element.value)
+        recitation = float(Element("recitation").element.value)
+        quiz = float(Element("quiz").element.value)
+        requirements = float(Element("requirements").element.value)
+        prelim_exam = float(Element("prelim_exam").element.value)
+
+        # Check for absences
+        if absences >= 4:
+            Element("resultText").element.innerHTML = "FAILED due to excessive absences."
+            Element("result").element.style.display = "block"
+            return
+
+        # Calculate attendance
+        attendance = 100 - (10 * absences)
+
+        # Calculate class standing and prelim grade
+        class_standing = (0.4 * quiz) + (0.3 * requirements) + (0.3 * recitation)
+        prelim_grade = (0.6 * prelim_exam) + (0.1 * attendance) + (0.3 * class_standing)
+
+        # Determine result styling and message
+        result_text = f'Your Prelim Grade is: {prelim_grade:.2f}. '
+
+        if prelim_grade < 75:
+            result_element_class = "failed"
+            result_text += "You need to improve to pass."
+        else:
+            result_element_class = "passed"
+            result_text += "Congratulations! You have a chance to pass this semester. KEEP IT UP!"
+         
+        Element("resultText").element.innerHTML = result_text
+        Element("result").element.className = result_element_class
+
+        # Define percentages for Midterm and Final
+        midterm_percent = 0.3
+        final_percent = 0.5
+
+        # Calculate required contributions for passing
+        required_total = 75 - (0.2 * prelim_grade)
+        required_total2 = 90 - (0.2 * prelim_grade)
+
+        # Midterm/Final Grades for 75 Passing
+        if required_total > 0:
+            required_midterm_and_final = required_total / (midterm_percent + final_percent)
+        else:
+            required_midterm_and_final = 0
+
+        # Midterm/Final Grades for 90 Passing (Dean's Lister)
+        if required_total2 > 0:
+            required_midterm_and_final2 = required_total2 / (midterm_percent + final_percent)
+        else:
+            required_midterm_and_final2 = 0
+
+        required_grades_text = (
+            f"To pass with 75%, you need an average grade of {required_midterm_and_final:.2f} (Midterm and Final).<br>"
+            f"To achieve 90% and if you want to become Dean Lister, you need an average  grade of {required_midterm_and_final2:.2f} (Midterm and Final)."
+        )
+
+        Element("requiredGrades").element.innerHTML = required_grades_text
+
+        # Show the result section
+        Element("result").element.style.display = "block"
+
+    except ValueError:
+        Element("resultText").write("Invalid input. Please enter numbers only.")
+        Element("result").element.style.display = "block"
+
+# Attach event listener to the calculate button
+Element("calculateButton").element.onclick = calculate_grades
+</py-script>
+
+</body>
+
+</html>
